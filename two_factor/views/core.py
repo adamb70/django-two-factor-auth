@@ -31,7 +31,6 @@ from django.views.generic import DeleteView, FormView, TemplateView
 from django.views.generic.base import View
 from django_otp import devices_for_user
 from django_otp.decorators import otp_required
-from django_otp.plugins.otp_static.models import StaticDevice, StaticToken
 from django_otp.util import random_hex
 
 from two_factor import signals
@@ -270,6 +269,7 @@ class LoginView(SuccessURLAllowedHostsMixin, IdempotentSessionWizardView):
         """
         Returns the OTP device selected by the user, or his default device.
         """
+        from django_otp.plugins.otp_static.models import StaticDevice
         if not self.device_cache:
             challenge_device_id = self.request.POST.get('challenge_device', None)
             if challenge_device_id:
@@ -308,6 +308,7 @@ class LoginView(SuccessURLAllowedHostsMixin, IdempotentSessionWizardView):
         """
         Adds user's default and backup OTP devices to the context.
         """
+        from django_otp.plugins.otp_static.models import StaticDevice
         context = super().get_context_data(form, **kwargs)
         if self.steps.current == 'token':
             context['device'] = self.get_device()
@@ -595,6 +596,7 @@ class BackupTokensView(FormView):
         """
         Delete existing backup codes and generate new ones.
         """
+        from django_otp.plugins.otp_static.models import StaticToken
         device = self.get_device()
         device.token_set.all().delete()
         for n in range(self.number_of_tokens):

@@ -7,7 +7,6 @@ from django.forms import Form, ModelForm
 from django.utils.translation import gettext_lazy as _
 from django_otp.forms import OTPAuthenticationFormMixin
 from django_otp.oath import totp
-from django_otp.plugins.otp_totp.models import TOTPDevice
 
 from .models import (
     PhoneDevice, get_available_methods, get_available_phone_methods,
@@ -135,6 +134,7 @@ class TOTPDeviceForm(forms.Form):
         return token
 
     def save(self):
+        from django_otp.plugins.otp_totp.models import TOTPDevice
         return TOTPDevice.objects.create(user=self.user, key=self.key,
                                          tolerance=self.tolerance, t0=self.t0,
                                          step=self.step, drift=self.drift,
